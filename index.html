@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ColorTap | Fun, Fair, Ad-Free</title>
+  <meta
+    name="description"
+    content="ColorTap is a fast, ad-free coloring app with tap-to-fill pages, undo/redo, and support built right into this site."
+  >
+  <style>
+    :root {
+      --paper: #fffaf0;
+      --paper-deep: #fff3dd;
+      --ink: #1f1f24;
+      --muted: #635b52;
+      --accent: #f56f46;
+      --accent-strong: #d94f28;
+      --leaf: #2f8f6a;
+      --sky: #5f8dee;
+      --sun: #ffd35a;
+      --card: rgba(255, 255, 255, 0.8);
+      --shadow: 0 24px 60px rgba(74, 47, 24, 0.16);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --max-width: 1120px;
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255, 211, 90, 0.45), transparent 28%),
+        radial-gradient(circle at top right, rgba(95, 141, 238, 0.24), transparent 24%),
+        linear-gradient(180deg, #fff7eb 0%, #fff4df 55%, #fff0d0 100%);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .shell {
+      width: min(calc(100% - 32px), var(--max-width));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(16px);
+      background: rgba(255, 250, 240, 0.84);
+      border-bottom: 1px solid rgba(31, 31, 36, 0.08);
+    }
+
+    .site-header .shell {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 18px 0;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-mark {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--sun) 48%, var(--sky) 100%);
+      box-shadow: 0 6px 16px rgba(245, 111, 70, 0.3);
+      flex: 0 0 auto;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .nav a {
+      text-decoration: none;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .nav a:hover,
+    .nav a:focus-visible {
+      color: var(--ink);
+    }
+
+    main {
+      padding: 28px 0 64px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+      gap: 28px;
+      align-items: stretch;
+      padding-top: 28px;
+    }
+
+    .hero-copy,
+    .hero-art,
+    .panel {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 38px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-copy::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -70px auto;
+      width: 180px;
+      height: 180px;
+      border-radius: 999px;
+      background: rgba(245, 111, 70, 0.1);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(47, 143, 106, 0.1);
+      color: var(--leaf);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.05;
+    }
+
+    h1 {
+      margin-top: 18px;
+      font-size: clamp(2.6rem, 8vw, 4.6rem);
+      letter-spacing: -0.04em;
+    }
+
+    .tagline {
+      margin-top: 12px;
+      font-size: clamp(1.1rem, 2vw, 1.45rem);
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    .lede {
+      margin-top: 18px;
+      max-width: 34rem;
+      font-size: 1.08rem;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 26px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 20px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      transform: translateY(-1px);
+    }
+
+    .button-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 14px 26px rgba(245, 111, 70, 0.28);
+    }
+
+    .button-secondary {
+      border-color: rgba(31, 31, 36, 0.12);
+      background: rgba(255, 255, 255, 0.66);
+      color: var(--ink);
+    }
+
+    .hero-art {
+      padding: 20px;
+      display: grid;
+      gap: 18px;
+      align-content: stretch;
+      min-height: 100%;
+    }
+
+    .logo-frame {
+      position: relative;
+      overflow: hidden;
+      min-height: 380px;
+      border-radius: 24px;
+      border: 2px dashed rgba(31, 31, 36, 0.12);
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255, 211, 90, 0.45), transparent 24%),
+        radial-gradient(circle at 78% 16%, rgba(95, 141, 238, 0.22), transparent 20%),
+        linear-gradient(180deg, var(--paper) 0%, var(--paper-deep) 100%);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .logo-frame img {
+      width: 100%;
+      max-height: 340px;
+      object-fit: contain;
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(31, 31, 36, 0.14);
+    }
+
+    .logo-fallback {
+      max-width: 20rem;
+      color: var(--muted);
+    }
+
+    .logo-fallback strong {
+      display: block;
+      font-size: 1.15rem;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .mini-card {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(31, 31, 36, 0.08);
+    }
+
+    .mini-card strong {
+      display: block;
+      font-size: 1.02rem;
+      margin-bottom: 4px;
+    }
+
+    .mini-card span {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 28px;
+      margin-top: 28px;
+    }
+
+    .panel {
+      padding: 30px;
+    }
+
+    .panel h2 {
+      font-size: clamp(1.7rem, 3vw, 2.3rem);
+      letter-spacing: -0.03em;
+    }
+
+    .panel p,
+    .panel li,
+    .panel label,
+    .panel .fine-print {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 22px 0 0;
+      display: grid;
+      gap: 14px;
+    }
+
+    .feature-list li {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.66);
+      border: 1px solid rgba(31, 31, 36, 0.08);
+    }
+
+    .feature-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(135deg, var(--sky), var(--leaf));
+    }
+
+    .feature-copy strong {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 4px;
+      font-size: 1rem;
+    }
+
+    form {
+      margin-top: 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(31, 31, 36, 0.16);
+      border-radius: 14px;
+      padding: 14px 15px;
+      font: inherit;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.9);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: rgba(95, 141, 238, 0.85);
+      box-shadow: 0 0 0 4px rgba(95, 141, 238, 0.16);
+      background: #fff;
+    }
+
+    textarea {
+      min-height: 170px;
+      resize: vertical;
+    }
+
+    .support-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .status {
+      display: none;
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-weight: 600;
+    }
+
+    .status.is-visible {
+      display: block;
+    }
+
+    .status-success {
+      background: rgba(47, 143, 106, 0.12);
+      color: #1b5a42;
+      border: 1px solid rgba(47, 143, 106, 0.18);
+    }
+
+    .status-error {
+      background: rgba(217, 79, 40, 0.12);
+      color: #8a2d16;
+      border: 1px solid rgba(217, 79, 40, 0.18);
+    }
+
+    .fine-print {
+      font-size: 0.95rem;
+    }
+
+    .site-footer {
+      padding: 18px 0 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .site-footer .shell {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .section-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy,
+      .hero-art,
+      .panel {
+        padding: 24px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .field-row,
+      .mini-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .site-header .shell {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .actions,
+      .support-actions {
+        align-items: stretch;
+      }
+
+      .button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell">
+      <a class="brand" href="index.html" aria-label="ColorTap home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>ColorTap</span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="#support">Support</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="tos.html">Terms</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="shell">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <div class="eyebrow">Coloring, minus the clutter</div>
+          <h1 id="hero-title">ColorTap</h1>
+          <p class="tagline">Fun, Fair, Ad-Free</p>
+          <p class="lede">
+            ColorTap is a calm, tap-to-fill coloring app built for quick play sessions and clean feedback.
+            Pick a color, fill closed regions instantly, undo when you want, and keep your progress on your device.
+          </p>
+          <div class="actions">
+            <a class="button button-primary" href="#support">Get Support</a>
+            <a class="button button-secondary" href="privacy.html">Read Privacy Policy</a>
+          </div>
+        </div>
+
+        <div class="hero-art">
+          <div class="logo-frame">
+            <img
+              src="my_coloring_book.jpg"
+              alt="ColorTap app artwork"
+              onerror="this.hidden=true; document.getElementById('logo-fallback').hidden=false;"
+            >
+            <div class="logo-fallback" id="logo-fallback" hidden>
+              <strong>Logo placeholder</strong>
+              <p>
+                Add <code>my_coloring_book.jpg</code> to this folder later and it will appear here without changing the page layout.
+              </p>
+            </div>
+          </div>
+          <div class="mini-grid" aria-label="Highlights">
+            <div class="mini-card">
+              <strong>Instant fills</strong>
+              <span>Tap a region and see color land immediately.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Undo ready</strong>
+              <span>Correct a fill without interrupting the flow.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Ad-free</strong>
+              <span>No banner clutter, popups, or surprise interruptions.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-grid" aria-label="Details">
+        <article class="panel">
+          <h2>What ColorTap focuses on</h2>
+          <ul class="feature-list">
+            <li>
+              <div class="feature-badge" aria-hidden="true">1</div>
+              <div class="feature-copy">
+                <strong>Tap-to-fill pages</strong>
+                Closed regions fill with a single tap for fast, predictable coloring.
+              </div>
+            </li>
+            <li>
+              <div class="feature-badge" aria-hidden="true">2</div>
+              <div class="feature-copy">
+                <strong>Fast color changes</strong>
+                Switch colors quickly and keep moving without tool friction.
+              </div>
+            </li>
+            <li>
+              <div class="feature-badge" aria-hidden="true">3</div>
+              <div class="feature-copy">
+                <strong>Undo and redo</strong>
+                Experiment freely, then step backward or forward as needed.
+              </div>
+            </li>
+            <li>
+              <div class="feature-badge" aria-hidden="true">4</div>
+              <div class="feature-copy">
+                <strong>Progress saved on device</strong>
+                Your current coloring state stays local so you can pick up where you left off.
+              </div>
+            </li>
+          </ul>
+        </article>
+
+        <article class="panel" id="support">
+          <h2>Support</h2>
+          <p>
+            Need help with ColorTap or want to report a bug? Use the form below. Your message goes straight to the support inbox without exposing a public email address on this site.
+          </p>
+          <form id="support-form" action="https://formspree.io/f/mykdqwbo" method="POST" novalidate>
+            <input type="text" name="_gotcha" class="visually-hidden" tabindex="-1" autocomplete="off">
+            <div class="field-row">
+              <label for="name">
+                Name
+                <input id="name" name="name" type="text" autocomplete="name" placeholder="Optional">
+              </label>
+              <label for="email">
+                Reply email
+                <input id="email" name="email" type="email" autocomplete="email" placeholder="Optional">
+              </label>
+            </div>
+            <label for="subject">
+              Subject
+              <input id="subject" name="subject" type="text" required placeholder="What do you need help with?">
+            </label>
+            <label for="message">
+              Message
+              <textarea
+                id="message"
+                name="message"
+                required
+                placeholder="Share the issue, what happened, and what device or iOS version you were using if relevant."
+              ></textarea>
+            </label>
+            <div class="support-actions">
+              <button class="button button-primary" type="submit" id="submit-button">Send Support Request</button>
+              <span class="fine-print">Reply email is optional, but include it if you want a response.</span>
+            </div>
+            <p class="fine-print">
+              This support form is processed by Formspree. By submitting, you agree to the site terms and privacy policy.
+            </p>
+            <div id="form-status" class="status" role="status" aria-live="polite"></div>
+            <noscript>
+              <p class="fine-print">
+                JavaScript is off, so submitting the form may take you to a Formspree confirmation page instead of showing an inline success message here.
+              </p>
+            </noscript>
+          </form>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell">
+      <div>ColorTap by Keaton Smiley</div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy</a>
+        <a href="tos.html">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const form = document.getElementById("support-form");
+      const status = document.getElementById("form-status");
+      const submitButton = document.getElementById("submit-button");
+
+      if (!form || !status || !submitButton || !window.fetch) {
+        return;
+      }
+
+      function showStatus(message, type) {
+        status.textContent = message;
+        status.className = "status is-visible " + type;
+      }
+
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        if (!form.reportValidity()) {
+          return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Sending...";
+        status.className = "status";
+        status.textContent = "";
+
+        try {
+          const response = await fetch(form.action, {
+            method: "POST",
+            body: new FormData(form),
+            headers: {
+              "Accept": "application/json"
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error("Support request failed");
+          }
+
+          form.reset();
+          showStatus("Support request sent. Thanks for reaching out.", "status-success");
+        } catch (error) {
+          showStatus("The message could not be sent right now. Please try again in a moment.", "status-error");
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = "Send Support Request";
+        }
+      });
+    }());
+  </script>
+</body>
+</html>
